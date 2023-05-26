@@ -34,6 +34,7 @@ public class AppSDM {
         }
 
         System.out.println("push");
+        System.out.println("pull");
 
 
 
