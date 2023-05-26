@@ -33,7 +33,7 @@ public class AppSDM {
             System.out.println(user1);
         }
 
-        System.out.println(user);
+
 
 
     }
