@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--        文件名: xxMapper-->
+
+
+<!--
+            namespace: 名称空间
+            resultType: 数据返回的类型(全类名) ,如果配置别名则可以直接用类名
+            id="selectBlog": sql语句的唯一标识
+
+        -->
+
+<!--        设置sql映射文件的namespace属性为Mapper接口的全限定名-->
+<mapper namespace="com.hbmz.mapper.UserMapper">
+
+    <!--    原生方案-->
+    <insert id="insert">
+        insert into t_user (id, username, password, age, gender, email) values (null, 'zhangsan', '123456', 21, '男', '1482962508@qq.com')
+    </insert>
+
+    <select id="insert1" resultType="User">
+        insert into t_user values (null, #{username}, #{password}, #{age}, #{gender}, #{email});
+    </select>
+
+    <select id="selectByUserNamePassword" resultType="com.hbmz.pojo.User">
+           select * from t_user where username = #{username} and password = #{password};
+    </select>
+
+    <select id="selectByCount" resultType="int">
+        select count(*) from t_user;
+    </select>
+
+    <select id="selectLike" resultType="User">
+        select * from t_user where username like "%"#{usernaem}"%";
+    </select>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="BookDaoImpl" class="com.hbmz.dao.impl.BookDaoImpl"/>
+
+    <bean id="BookServiceImpl" class="com.hbmz.service.impl.BookServiceImpl">
+
+    <!--
+        namen: 该Bean依赖的成员
+        ref: 依赖的另一个 Bean 的 Id
+    -->
+        <property name="bookDao" ref="BookDaoImpl"/>
+
+    </bean>
+
+
+</beans>

@@ -1,0 +1,69 @@
+
+todo:
+    Git工作机制:
+                        git add           git commit                    git push
+        工作区 : 代码文件  ==> 暂存区: 临时存储 ==> 本地库(产生对应的历史版本) ==> 远程库(Git Hub)
+
+todo:
+    git 常用命令
+        git config --global user.name 用户名        ==> 设置用户签名
+        git config --global user.email 邮箱         ==> 设置用户邮箱
+      设置完后可以到用户的家目录下查看.gitConfig文件
+        git init                                    ==> 初始化本地库
+        git status                                  ==> 查看本地库状态
+        git add (filename)                          ==> 添加到暂存区
+        git commit -m "日志信息" (filename)          ==> 提交本地库
+        git reflog                                  ==> 查看历史记录
+        git reset --hard 版本号                      ==> 版本穿梭
+    git日志查看
+        git reflog     ==> 查看简单日志
+
+            b1ac6f1 (HEAD -> master) HEAD@{0}: commit (initial): first commit
+                其中:
+                    b1ac6f1: 版本号
+                    HEAD -> master: 指针分支
+                    commit (initial): first commit: 最初版本信息
+
+            d1632da (HEAD -> master) HEAD@{0}: commit: scend commit
+            b1ac6f1 HEAD@{1}: commit (initial): first commit
+                其中:
+                    b1ac6f1 d1632da: 两个版本号
+                    HEAD -> master: 指针分支
+                    commit (initial): first commit: 最初版本信息
+                    commit: scend commit : 版本信息
+      todo:
+        git log    ==> 查看详细日志
+
+            commit b1ac6f1d4228ba446f8351c64fd317e9906d8850 (HEAD -> master)
+            Author: haohao <1482962508@qq.com>
+            Date:   Thu May 25 17:14:57 2023 +0800
+
+                first commit
+
+                其中:
+                    b1ac6f1d4228ba446f8351c64fd317e9906d8850 (HEAD -> master): 详细版本号和指针位置
+                    Author: haohao <1482962508@qq.com>: 提交者信息
+                    Date:   Thu May 25 17:14:57 2023 +0800: 提交日期
+                    first commit : 提交版本信息
+
+todo:
+    git分支:
+
+        在版本控制过程中, 同时推进多个任务, 为每个任务, 我们可以创建每个任务的单独分支.
+        使用分支意味着把任务从主线上分离出来, 在开发分支的过程中不会影响主分支的运行
+
+        分支操作:
+            git branch 分支名      ==> 创建分支
+            git branch -v         ==> 查看分支
+            git checkout 分支名    ==> 切换分支
+            git merge 分支名       ==> 合并分支(把指定分支合并到当前分支上)
+
+todo:
+    分支冲突:
+        原因:
+            合并分支时, 两个分支在同一文件的同一位置有两套完全不同的修改.
+            导致git无法自动提交. 必须人为修改内容
+
+
+
+

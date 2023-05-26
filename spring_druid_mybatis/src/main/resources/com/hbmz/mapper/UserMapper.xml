@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--        文件名: xxMapper-->
+
+
+<!--
+            namespace: 名称空间
+            resultType: 数据返回的类型(全类名) ,如果配置别名则可以直接用类名
+            id="selectBlog": sql语句的唯一标识
+
+        -->
+
+<!--        设置sql映射文件的namespace属性为Mapper接口的全限定名-->
+<mapper namespace="com.hbmz.mapper.UserMapper">
+
+    <!--    原生方案-->
+    <!--<select id="selectAll" resultType="User">
+        &lt;!&ndash;<select id="selectAll" resultType="com.hbmz.pojo.Student">&ndash;&gt;
+
+
+        select * from t_demo01;
+
+    </select>-->
+
+
+    <select id="selectByUsername" resultType="user">
+        select * from t_user where username = #{username};
+    </select>
+
+    <select id="selectByUserNamePassword" resultType="user">
+        select * from t_user where username = #{username} and password = #{password};
+    </select>
+
+
+</mapper>

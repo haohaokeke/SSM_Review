@@ -1,0 +1,762 @@
+TODO:
+    Spring:
+        todo:
+            1. IoC(Inversion of Control)
+                使用时由外部提供对象, 对象创建的控制权由程序转移到外部
+
+        todo:
+            2.Spring技术对IoC的实现:
+                Spring提供IOC容器
+                IOC容器负责对象的创建, 初始化等. 被创建or被管理的对象在IOC容器称为Bean
+
+        todo:
+            使用IOC步骤:
+
+                pom.xml导入spring-context依赖
+                --> 如何将被管理的对象告知IOC容器? (配置)
+                --> 被管理的对象交给IOC容器, 如何获取到IOC?(接口)
+                --> 如何从IOC获取Bean? (接口方法)
+                --> 使用spring?(导坐标)
+        todo:
+            Bean:
+                别名:
+                    可以在Bean标签内定义name属性,用来定义别名(可以是多个)
+
+                scope:
+                    = singleton: 单例对象(默认)
+                        适用于:
+                            表现层对象
+                            业务层对象
+                            数据层对象
+                            工具对象
+
+                    = prototype: 非单例对象
+                    <bean id="bookService" class="com.hbmz.service.impl.BookServiceImpl" scope="prototype">
+                        用于:
+                            封装实体类的域对象
+
+                todo:
+                    Bean的实例化方式:
+
+                        1. 构造方法
+                            提供可访问的构造方法
+                            无参构造如果不存在, 将抛出异常
+
+                        2.静态工厂
+
+
+                        3.实例工厂
+
+                        4.使用FactoryBean实例化bean
+                            /**
+                             * @利用工厂造对象
+                             */
+                            public class bookDaoFactoryBean implements FactoryBean<bookDao> {
+
+                                /*
+                                    代替原始实例化工厂中创建对象的方法
+                                 */
+                                @Override
+                                public bookDao getObject() throws Exception {
+                                    return new bookDaoImpl();
+                                }
+
+
+                                @Override
+                                public Class<?> getObjectType() {
+                                    return bookDao.class;
+                                }
+                            }
+
+                            <!--    使用FactoryBean实例化bean-->
+                                <bean id="bookDao" class="com.hbmz.dao.factory.bookDaoFactoryBean"/>
+
+                todo:
+                    Bean的生命周期:
+
+                        创建对象 --> 执行构造方法 --> 执行属性注入(set操作) --> 执行bean初始化
+                        --> 使用bean --> 执行业务 --> 关闭/销毁容器 --> 执行bean销毁方法
+
+        todo:
+            依赖注入:   是指程序运行过程中，如果需要调用另一个对象协助时，无须在代码中创建被调用者，而是依赖于外部的注入。
+
+                方式:
+                    setter注入:
+
+                        引用类型
+
+                        简单类型(基本数据类型与string)
+                            定义set方法
+                            配置中使用property 的 属性 value
+
+                    构造器(构造方法)注入
+                        引用类型
+
+                        简单类型(基本数据类型与string)
+
+                        一样的方案:
+                            提供有参的构造方法
+                            配置中使用constructor -arg 标签的 value 属性 注入简单类型
+
+        todo:
+            自动装配:
+
+                <!--    自动装配-->
+                    <bean id="bookService" class="com.hbmz.service.impl.BookServiceImpl" scope="singleton" autowire="byType"/>
+
+                在bean标签配置 autowire="byType" 属性
+
+                特性:
+                    自动注入用于引用数据类型依赖注入, 不能对简单类型进行操作
+                    使用按类型装配时(byType)必须保障容器中相同类型的bean唯一
+                    自动装配优先级低于setter注入和构造器注入, 同时出现时自动装配失效
+        todo:
+            注解开发:
+
+                1. 注解开发定义bean
+                    核心文件配置:
+                        配置context域对象 --> 通过组件扫描加载相关bean
+                        <beans xmlns="http://www.springframework.org/schema/beans"
+                               xmlns:context="http://www.springframework.org/schema/context"
+                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xsi:schemaLocation="
+                                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+                        <!--        配置包扫描 &ndash;&gt; 找到 UserDaoIml 和 userServiceImpl-->
+                                <context:component-scan base-package="com.com.hbmz"/>
+
+                        </beans>
+
+                    在bean对象使用@Component注解, 定义Bean
+                        三个衍生注解:
+                            @Service: 用于业务层定义Bean
+                            @Controller: 用于表现层定义Bean
+                            @Repository: 用于数据层定义Bean
+
+                        可以为其设置名称@Component("name")
+                            @Component("name")
+                                //获取bean对象
+                                UserDao userDao = (UserDao) ctx.getBean("userDaoImpl");
+
+                            @Service   ==> 没有指定名称
+                                //获取bean对象
+                                UserService userService = ctx.getBean(UserService.class);
+
+
+        todo:
+            纯注解开发:
+            
+                去掉applicationContext.xml文件 --> 定义 springConfig 取而代之
+                --> 在springConfig 上定义
+                    @Configuration
+
+                         /*取代: xmlns="http://www.springframework.org/schema/beans"
+                                 xmlns:context="http://www.springframework.org/schema/context"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xsi:schemaLocation="
+                                 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">*/
+
+
+                    @ComponentScan("com.hbmz") --> 扫描bean
+
+                         /*取代: <context:component-scan base-package="com.com.hbmz"/>*/
+
+                --> 在主函数上使用
+                    ApplicationContext ctx = new AnnotationConfigApplicationContext(springConfig.class);
+                    取代
+                    ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+                todo:
+                    依赖注入: (自动装配 --> 使用暴力反射)
+
+                        引用数据类型:
+                            在注入的Bean内定义要注入的另一个Bean的指针(无需提供setter方法)
+                            --> 在成员变量上使用注解@AutoWire
+                            --> 若有多个Bean则可用 @Qualifier("id") 识别加载
+
+                            * 自动装配建议使用无参构造方法创建对象
+                            * @Qualifier("id")注解无法单独使用, 必须配合@AutoWire
+
+                        简单数据类型:
+                            在注入的Bean内定义要注入的另一个Bean的指针(无需提供setter方法)
+                            --> 在成员变量上使用注解@Value("v")
+                                @Value("1232")
+                                private int a;
+
+                            注解加载配置文件:
+                                在springConfig上使用@PropertySource("name") 追踪源文件
+                                /*加载配置文件*/
+                                @PropertySource("value.properties")
+                                路径仅支持单一文件配置, 多文件使用数组格式, 不允许使用通配符*
+
+                                在注入的Bean内定义基本数据类型
+                                --> 在成员变量上使用注解@Value("${v}")
+                                 @Value("${mysql.password}")
+                                    private int value;
+
+                    使用独立的配置类管理第三方类
+                        导入式:
+                            --> 创建一个独立类, 并在提供获取的方法上使用Bean注解 --> 表示当前方法的返回值是一个Bean
+                                public class jdbcConfig {
+
+                                    @Bean
+                                    public DataSource dataSource() {
+
+                                        DruidDataSource ds = new DruidDataSource();
+                                        ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+                                        ds.setUrl("jdbc:mysql://localhost:3306/demo01");
+                                        ds.setUsername("root");
+                                        ds.setPassword("123456");
+
+                                        return ds;
+                                    }
+
+                                }
+
+                            --> 在配置类上使用 @Import({jdbcConfig.class}, {}, ...) 导入Bean类
+                                //导入类外Bean
+                                @Import({jdbcConfig.class})
+                                public class springConfig {
+                                }
+
+                            第三方Bean依赖注入
+                                引用类型:
+                                    方法形参
+                                    public DataSource dataSource(UserDaoImpl userDao)
+
+                                简单类型:
+                                    成员变量
+                                        @Value("${mysql.driver}")
+                                        private String driver;
+                                        @Value("${mysql.url}")
+                                        private String url;
+                                        @Value("${mysql.username}")
+                                        private String username;
+                                        @Value("${mysql.password}")
+                                        private String password;
+
+            todo:
+                spring 整合 mybatis：
+
+                    pom.xml文件导入相关依赖:
+                        <dependency>
+                                    <groupId>org.mybatis</groupId>
+                                    <artifactId>mybatis</artifactId>
+                                    <version>3.5.6</version>
+                                </dependency>
+
+                        <!--        spring 整合数据库包-->
+                                <dependency>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-jdbc</artifactId>
+                                    <version>4.1.2.RELEASE</version>
+                                </dependency>
+
+                        <!--        spring整合mybatis-->
+                                <dependency>
+                                    <groupId>org.mybatis</groupId>
+                                    <artifactId>mybatis-spring</artifactId>
+                                    <version>1.3.0</version>
+                                </dependency>
+
+                    定义第三方类： jdbcConfig 和 mybatisConfig 用来获取管理第三方对象
+                        jdbcConfig ：获取DataSource
+                        mybatisConfig： 获取SqlSessionFactoryBean 和 MapperScannerConfigurer
+                    在springConfig上配置：
+                          @Configuration    --> 标识配置类
+                          @ComponentScan("com.hbmz") --> 用于扫描自定义bean类
+
+                          @PropertySource("classpath:db.properties") --> 扫描配置文件
+
+                          @Import({jdbcConfig.class, mybatisConfig.class}) -->导入第三方Bean
+
+                   todo:
+                    @SuppressWarnings("ALL") ==> 屏蔽提示
+
+            todo:
+                spring 整合 Junit:
+
+                    @RunWith(SpringJUnit4ClassRunner.class)
+
+                    @ContextConfiguration(classes = springConfig.class)
+
+                    public class spring_junit {
+
+                        @Autowired
+                        private service service;
+
+                        @Test
+                        public void test01(){
+
+                            people people = service.selectById(1);
+
+                            System.out.println(people);
+
+                        }
+
+                    }
+
+        todo:
+            AOP: (Aspect Oriented Programming) 面向切面编程
+                在不惊动原始设计的基础上进行功能增强
+                连接点: 程序执行过程中的任意位置, 方法,抛出异常,设置变量等
+                切入点: 匹配连接点的式子
+                通知: 在切入点执行的操作, 共性功能
+                切面: 描述切入点和通知的对应关系
+
+                开发步骤:
+                    --> 导入依赖:
+                            <dependencies>
+                                    <dependency>
+                                        <groupId>org.springframework</groupId>
+                                        <artifactId>spring-context</artifactId>
+                                        <version>5.2.10.RELEASE</version>
+                                    </dependency>
+
+                                    <dependency>
+                                        <groupId>org.aspectj</groupId>
+                                        <artifactId>aspectjweaver</artifactId>
+                                        <version>1.9.5</version>
+                                    </dependency>
+
+                            </dependencies>
+
+                    --> 自定义Aop类:
+                           类上使用:
+                                @Component : 表示被spring管理的Bean
+                                @Aspect : 告诉sprig此类为切面类
+
+                                自定义一个方法体为空的方法, 并在方法上使用 --> 绑定切入点
+                                    @Pointcut("execution(void com.hbmz.dao.BookDao.update())")
+                                    描述该方法实际代表的连接点方法
+
+                                    再创建一个方法来描述通知, 并在方法上使用@Before("pt()"), 表示在切入点前切入通知
+                                                                        @After("pt()"), 表示在切入点后切入通知
+
+                                         @Before("pt()")
+                                         public void method()
+
+                            @Component // 表示被spring管理的Bean
+                            @Aspect     // 告诉sprig此类为切面类
+                            public class MyAop {
+
+                                //    切入点
+                                    @Pointcut("execution(void com.hbmz.dao.BookDao.update())")
+                                    private void pt(){}
+
+                                    //通知
+                                    @Before("pt()")
+                                    public void method() {
+
+                                        System.out.println(System.currentTimeMillis());
+
+                                    }
+
+                            }
+
+                    --> 在spring配置类上使用@EnableAspectJAutoProxy --> 告诉spring 有使用注解开发的Aspect
+            todo:
+                Aop切入点表达式:
+
+                    可以使用通配符描述切入点
+                        *: 单个独立的任意符号, 可以独立出现, 也可以是前缀的匹配符
+                        @Pointcut("execution(* com.hbmz.*.BookDao.up*())")
+                            表示: 返回值为任意, 在com.hbmz包下的任意中的BookDao类or接口中所有以up开头的空参方法
+
+                        ..: 多个连续的任意符号, 可以独立出现, 常用于简化包名和参数的书写
+                        @Pointcut("execution(* com..BookDao.update(..))")
+                            表示com包下的任意个任意包中的BookDao类or接口中所有update(..), 返回值任意且任意个的方法
+
+                    技巧:
+                        所有代码按标准开发
+                        描述切入点通常描述接口, 而不描述实现类
+                        访问控制修饰符针对接口开发均采用public描述(略)
+                        返回值类型对于增删改类使用精准匹配类型加速匹配, 对于查则使用*通配符快速描述
+                        包名书写尽量不适用 .. 匹配, 效率过低, 常用 * 做单个包的描述匹配
+                        接口名/类名书写名称与模块相关的采用 * 匹配, 如 getById ==> getBy*
+                        参数规则相对复杂, 根据业务灵活调整
+                        通常不使用异常作为规则
+
+                        @Pointcut("execution(* com.hbmz.*.*Dao.update(..))")
+
+
+                    通知类型:
+                        环绕通知:    @Around
+                            @Around("pt1()")
+                                public Object method1(ProceedingJoinPoint pjp) throws Throwable {
+
+                                    System.out.println("权限检查");
+
+                                    Object p = pjp.proceed();
+
+                                    System.out.println("日志...");
+
+                                    return p;
+
+                                }
+                            1. 环绕通知必须依赖形参ProceedingJoinPoint才能实现对原始方法的调用, 进而实现原始方法前后添加通知
+                            2. 通知中如果未使用ProceedingJoinPoint对原始方法进行调用, 将会跳过原始方法
+                            3. 对原始方法调用可以不接收返回值, 通知方法设为void即可, 如果接收, 则必须设定为Object类型
+                            4. 原始方法的返回值如果是void, 通知方法的返回值类型可以为void or Object
+                            5. 由于无法预测原始方法运行是否会抛出异常, 因此环绕通知必须抛出异常
+
+
+todo:
+ springMVC
+
+        开发步骤:
+            --> 在pom.xml导入相关依赖和插件
+                    <!--  导入springmvc和servlet-->
+
+                      <dependencies>
+                        <dependency>
+                          <groupId>javax.servlet</groupId>
+                          <artifactId>javax.servlet-api</artifactId>
+                          <version>3.1.0</version>
+                          <scope>provided</scope>
+                        </dependency>
+
+                        <dependency>
+                          <groupId>org.springframework</groupId>
+                          <artifactId>spring-webmvc</artifactId>
+                          <version>5.2.10.RELEASE</version>
+                        </dependency>
+                      </dependencies>
+
+                    tomcat7 插件
+                      <build>
+                        <plugins>
+
+                          <plugin>
+
+                            <groupId>org.apache.tomcat.maven</groupId>
+                            <artifactId>tomcat7-maven-plugin</artifactId>
+                            <version>2.1</version>
+
+                            <configuration>
+
+                              <port>80</port>
+                              <path>/</path>
+
+                            </configuration>
+
+                          </plugin>
+
+                        </plugins>
+
+                      </build>
+
+                      注意: javax.servlet-api , <scope>provided</scope> 防止和插件通知
+
+            --> 自定义一个 Bean 用来设置请求和响应 /定义Bean
+
+                     @Controller
+                     public class UserController {
+
+                         //设置访问路径 --> 映射路径
+                         @RequestMapping("/save")
+
+                         //设置当前方法的相应体 --> 返回值类型
+                         @ResponseBody
+                         public String save(){
+
+                             System.out.println("user save ...");
+
+                             return "{'module': 'springMVC'}";
+
+                         }
+
+                     }
+
+            --> 定义一个servlet容器启动的配置类, 在里面加载spring的配置 继承 AbstractDispatcherServletInitializer
+
+                public class ServletContainersInnitConfig extends AbstractDispatcherServletInitializer {
+
+                    //加载springMVC容器配置
+                    @Override
+                    protected WebApplicationContext createServletApplicationContext() {
+
+                        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+
+                        ctx.register(SpringConfig.class);
+
+                        return ctx;
+                    }
+
+                    //设置哪些请求归属springMVC处理
+                    @Override
+                    protected String[] getServletMappings() {
+                        return new String[]{"/"}; //表示所有请求
+                    }
+
+                    // 加载spring容器配置
+                    @Override
+                    protected WebApplicationContext createRootApplicationContext() {
+                        return null;
+                    }
+                }
+
+            --> 创建spring核心配置类 并指定扫描 自定义Bean
+
+                @Configuration
+                @ComponentScan("com.hbmz.controller")
+                @EnableWebMvc   //使之能够处理WebMVC的数据 --> 如Json
+                public class SpringConfig {
+
+                }
+
+    请求映射路径
+        防止冲突
+            在类上使用 @RequestMapping("/user") --> 表示路径
+            之后在方法上使用再 @RequestMapping("/save") --> 表示资源
+
+
+    接收参数:
+        在响应体方法中添加相应参数即可
+            @ResponseBody
+                public String save(String name, int age){
+
+                    System.out.println("user save ..." + "name ==>" + name + "age ==> " + age);
+
+                    return "{'module': 'springMVC'}";
+
+                }
+
+
+        接收参数乱码: 在servlet容器启动的配置类, 添加设置过滤器的方法
+            //处理乱码 ==> 过滤器
+                @Override
+                protected Filter[] getServletFilters() {
+
+                    CharacterEncodingFilter filter = new CharacterEncodingFilter();
+
+                    filter.setEncoding("UTF-8");
+
+                    return new Filter[]{filter}; //多个可用, 分开
+                }
+
+        请求参数名和形参不一致: 加上 @RequestParam("name") 注解
+            //设置当前方法的相应体 --> 返回值类型
+                @ResponseBody
+                public String save(@RequestParam("name") String u_name, @RequestParam("age") Integer u_age){
+
+                    System.out.println("user save ..." + "name ==>" + u_name + " , age ==> " + u_age);
+
+                    return "{'module': 'springMVC'}";
+
+                }
+
+            }
+
+        当请求参数为集合时, 在前面添加@RequestParam绑定关系
+            @RequestMapping("/save2")
+                @ResponseBody
+                public String save2(@RequestParam List<String> likes) {
+
+                    System.out.println("集合参数 ==> " + likes);
+
+                    return "{'module': 'springMVC' 'List param'}";
+
+                }
+
+        接收json格式数据:
+            --> 导入Json依赖
+                <!--    加入json依赖-->
+                    <dependency>
+                      <groupId>com.fasterxml.jackson.core</groupId>
+                      <artifactId>jackson-databind</artifactId>
+                      <version>2.9.5</version>
+                    </dependency>
+
+                  </dependencies>
+
+            --> 编写接收体和响应体:  @RequestBody List<String> likes 参数前加 @RequestBody 注解
+                 //集合接收Json数据格式
+                    @RequestMapping("/listParamForJson")
+                    @ResponseBody
+                    public String listParamForJson(@RequestBody List<String> likes){
+
+                        System.out.println("集合参数 ==> " + likes);
+
+                        return "{'module': 'springMVC' 'listParamForJson'}";
+
+                    }
+
+            --> 在SpringMVC核心配置类上使用 @EnableWebMvc   //使之能够处理WebMVC的数据 --> 如Json
+
+
+        接收时间格式:
+            //日期格式
+                @RequestMapping("/date")
+                @ResponseBody
+                public String dataParam(Date date1,
+                                        @DateTimeFormat(pattern = "yyyy-MM-dd")Date date2,
+                                        @DateTimeFormat(pattern = "yyyy/MM/dd HH:mm:ss") Date date3) {
+
+                    System.out.println("date1:" + date1); //date1:Thu Apr 20 00:00:00 CST 2023
+                    System.out.println(date2);          //Thu Apr 20 00:00:00 CST 2023
+
+                    System.out.println(date3);
+
+                    return "{'module': 'springMVC' 'dataParam'}";
+
+                }
+
+        @ResponseBody: 设置响应体: 返回值与方法的返回值一致
+            若不加该注解: 则表示响应体为与返回值同名的页面资源 --> 产生页面跳转
+    todo:
+        REST风格: 表现性状态转移 ==> 一种资源的访问形式
+            优点:
+                隐藏资源的访问行为, 无法通过地址看出操作
+                化简书写
+
+            操作和请求类型:
+                查询 ==> GET
+                添加(新增, 保存) ==> POST
+                修改(更新) ==> PUT
+                删除 ==> DELETE
+
+            描述模块名通常使用复数, 加s, 表示此类资源为多个
+
+            根据REST风格对资源进行访问称为 RESTful
+
+            使用:
+                 @Controller
+                 public class UserController {
+
+                     @RequestMapping("/users")
+                     @ResponseBody
+                     public String save() {
+
+                         System.out.println("user save ...");
+
+                         return "{' module': 'springMVCRESTFul'}";
+                     }
+
+                     @RequestMapping(value = "/users", method = RequestMethod.PUT)
+                     @ResponseBody
+                     public String update(@RequestBody User user) {
+
+                         System.out.println("user update ..." + user);
+
+                         return "{' module': 'springMVCRESTFul'}";
+
+                     }
+
+                     @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
+                     @ResponseBody
+                     public String delete(@PathVariable Integer id) {
+
+                         System.out.println("user update..." + id);
+
+                         return "{' module': 'springMVCRESTFul'}";
+
+                     }
+
+                     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
+                     @ResponseBody
+                     public String getById(@PathVariable Integer id) {
+
+                         System.out.println("user getById ..." + id);
+
+                         return "{' module': 'springMVCRESTFul'}";
+
+                     }
+
+                     @RequestMapping(value = "/users", method = RequestMethod.GET)
+                     @ResponseBody
+                         public String getAll() {
+
+                         System.out.println("user getAll ...");
+
+                         return "{' module': 'springMVCRESTFul'}";
+
+                     }
+
+                 }
+
+            化简:
+                @RestController 是@controller和@ResponseBody 的结合
+
+                    @Controller 将当前修饰的类注入SpringBoot IOC容器，使得从该类所在的项目跑起来的过程中，这个类就被实例化。
+                    @ResponseBody 它的作用简短截说就是指该类中所有的API接口返回的数据，甭管你对应的方法返回Map或是其他Object，
+                                它会以Json字符串的形式返回给客户端
+
+                @RestController
+                @RequestMapping("/books")
+                public class BookController {
+
+                    @PostMapping
+                    public String save() {
+
+                        System.out.println("book save ...");
+
+                        return "{' module': 'springMVCRESTFul'}";
+                    }
+
+                    @PutMapping
+                    public String update(@RequestBody Book book) {
+
+                        System.out.println("book update ..." + book);
+
+                        return "{' module': 'springMVCRESTFul'}";
+
+                    }
+
+                    @DeleteMapping("/{id}")
+                    public String delete(@PathVariable Integer id) {
+
+                        System.out.println("book update..." + id);
+
+                        return "{' module': 'springMVCRESTFul'}";
+
+                    }
+
+                    @GetMapping("/{id}")
+                    public String getById(@PathVariable Integer id) {
+
+                        System.out.println("book getById ..." + id);
+
+                        return "{' module': 'springMVCRESTFul'}";
+
+                    }
+
+                    @GetMapping
+                        public String getAll() {
+
+                        System.out.println("book getAll ...");
+
+                        return "{' module': 'springMVCRESTFul'}";
+
+                    }
+
+                }
+
+    todo:
+        将资源文件放行(交给服务器处理):
+
+            @Configuration
+            public class SpringMVCSupport extends WebMvcConfigurationSupport {
+
+                @Override
+                protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+                    registry.addResourceHandler("/pages/**").addResourceLocations("/pages/");
+                    registry.addResourceHandler("/js/**").addResourceLocations("/js/");
+                    registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+                    registry.addResourceHandler("/plugins/**").addResourceLocations("/plugins/");
+
+                }
+            }
+
+
+            @Configuration
+            @ComponentScan({"com.hbmz.controller", "com.hbmz.config"})
+            @EnableWebMvc
+            public class SpringMVCConfig {
+
+
+
+            }

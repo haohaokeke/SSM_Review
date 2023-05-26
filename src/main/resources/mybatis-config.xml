@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE configuration
+
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <properties resource="db.properties"></properties>
+
+    <!--    文件名: mybatis-config-->
+
+    <!-- 配置日志功能, 一定要放在这, 放在下面会报错-->
+
+    <settings>
+
+        <!--        开启全局缓存, 默认true-->
+        <setting name="cacheEnabled" value="true"/>
+
+        <!--        开启全局懒加载, 默认false-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+
+        <!--        开启驼峰映射, 默认false-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+
+    </settings>
+
+
+    <!--    别名: 为自定义类, 取别名, 用于 Mapper中的 resultType-->
+    <typeAliases>
+        <!--        包扫描 resultType 大小写不敏感-->
+        <package name="com.hbmz.pojo"/>
+
+    </typeAliases>
+
+
+    <!--配置 mybatis 环境 可以配置多个-->
+    <environments default="mysql">
+
+        <!--id:数据源的名称-->
+        <environment id="mysql">
+
+            <!--配置事务类型：使用 JDBC 事务（使用 Connection 的提交和回滚）-->
+            <transactionManager type="JDBC"/>
+
+            <!--数据源 dataSource：创建数据库 Connection 对象
+            type: POOLED 使用数据库的连接池
+            -->
+            <dataSource type="POOLED">
+
+
+                <!--连接数据库的四个要素-->
+                <property name="driver" value="${mysql.driver}"/>
+
+                <property name="url"
+                          value="${mysql.url}"/>
+
+                <property name="username" value="${mysql.username}"/>
+
+                <property name="password" value="${mysql.password}"/>
+
+            </dataSource>
+
+        </environment>
+
+    </environments>
+
+    <mappers>
+
+        <!--        加载映射文件-->
+        <!--告诉 mybatis 要执行的 sql 语句的位置-->
+<!--         <mapper resource="com/hbmz/mapper/UserMapper.xml"/>-->
+<!--
+        条件:
+            mapper接口必须与映射文件所在包一致
+            mapper接口的名字和映射文件必须一致-->
+        <package name="com.hbmz.mapper"/>
+
+    </mappers>
+
+</configuration>
+
+

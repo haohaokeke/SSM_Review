@@ -1,0 +1,16 @@
+todo:
+    MySQL版本不同的注意事项
+        MySQL 5的驱动类使用: mysql.driver=com.mysql.jdbc.Driver
+        MySQL 8的驱动类使用: mysql.driver=com.mysql.cj.jdbc.Driver
+    @param注解设置sql参数
+
+        List<User> selectByUserNamePassword(@Param("username")String username, @Param("password")String password);
+
+    todo:
+        模糊查询:
+            select * from t_user where username like '%#{usernaem}%'                    --> 报错
+        解决:
+            select * from t_user where username like '%${usernaem}%'                    --> 1
+            select * from t_user where username like concat('%', #{usernaem}, '%');     --> 2
+            select * from t_user where username like "%"#{usernaem}"%";                 --> 3
+
