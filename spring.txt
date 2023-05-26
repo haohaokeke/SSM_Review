@@ -361,13 +361,13 @@ TODO:
                 Aop切入点表达式:
 
                     可以使用通配符描述切入点
-                        *: 单个独立的任意符号, 可以独立出现, 也可以是前缀的匹配符
+                        *: 单个独立 的任意符号, 可以独立出现, 也可以是前缀的匹配符
                         @Pointcut("execution(* com.hbmz.*.BookDao.up*())")
                             表示: 返回值为任意, 在com.hbmz包下的任意中的BookDao类or接口中所有以up开头的空参方法
 
-                        ..: 多个连续的任意符号, 可以独立出现, 常用于简化包名和参数的书写
+                        ..: 多个连续 的任意符号, 可以独立出现, 常用于简化包名和参数的书写
                         @Pointcut("execution(* com..BookDao.update(..))")
-                            表示com包下的任意个任意包中的BookDao类or接口中所有update(..), 返回值任意且任意个的方法
+                            表示com包下的任意个任意包中的BookDao类or接口中所有update(..), 返回值任意且有任意个参数的update方法
 
                     技巧:
                         所有代码按标准开发
@@ -389,7 +389,7 @@ TODO:
 
                                     System.out.println("权限检查");
 
-                                    Object p = pjp.proceed();
+                                    Object p = pjp.proceed();           //原有方法的返回p
 
                                     System.out.println("日志...");
 
@@ -401,6 +401,34 @@ TODO:
                             3. 对原始方法调用可以不接收返回值, 通知方法设为void即可, 如果接收, 则必须设定为Object类型
                             4. 原始方法的返回值如果是void, 通知方法的返回值类型可以为void or Object
                             5. 由于无法预测原始方法运行是否会抛出异常, 因此环绕通知必须抛出异常
+
+            todo:
+                spring事务管理
+                    配置事务步骤:
+
+                        开启事务        -->
+                            //开启事务
+                            @Transactional
+
+                            Spring注解式事务通常添加在业务层接口中, 降低耦合
+                                注解式事务可以添加到方法上,也可以添加到接口上(表示该接口上的所有方法都开启事务)
+
+                        设置事务管理器   --> 使用JDBC事务(在JDBC中配置)
+                            //设置事务管理器
+                                @Bean
+                                public PlatformTransactionManager transactionManager(DataSource dataSource) {
+
+                                    DataSourceTransactionManager dtm = new DataSourceTransactionManager();
+
+                                    dtm.setDataSource(dataSource);
+
+                                    return dtm;
+
+                                }
+
+                        开启注解式事务驱动 -->在SpringConfig上配置
+                            //开启注解式事务
+                            @EnableTransactionManagement
 
 
 todo:

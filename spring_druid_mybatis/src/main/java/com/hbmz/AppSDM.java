@@ -17,9 +17,12 @@ public class AppSDM {
         //获取Bean
         UserMapper userMapper = ctx.getBean(UserMapper.class);
 
-//        List<User> user = userMapper.selectAll();
-//
-//        System.out.println(user);
+        List<User> users = userMapper.selectAll();
+
+        System.out.println(users);
+
+        System.out.println("==================================");
+
 
         User user = userMapper.selectByUsername("root");
 
@@ -32,9 +35,6 @@ public class AppSDM {
         for (User user1 : userList) {
             System.out.println(user1);
         }
-
-        System.out.println("push");
-        System.out.println("pull");
 
 
 
