@@ -476,7 +476,7 @@ todo:
 
                       </build>
 
-                      注意: javax.servlet-api , <scope>provided</scope> 防止和插件通知
+                      注意: javax.servlet-api , <scope>provided</scope> 防止和插件冲突
 
             --> 自定义一个 Bean 用来设置请求和响应 /定义Bean
 
@@ -501,6 +501,7 @@ todo:
             --> 定义一个servlet容器启动的配置类, 在里面加载spring的配置 继承 AbstractDispatcherServletInitializer
 
                 public class ServletContainersInnitConfig extends AbstractDispatcherServletInitializer {
+                                                               or  AbstractAnnotationConfigDispatcherServletInitializer
 
                     //加载springMVC容器配置
                     @Override
@@ -508,7 +509,7 @@ todo:
 
                         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
 
-                        ctx.register(SpringConfig.class);
+                        ctx.register(SpringMVCConfig.class);
 
                         return ctx;
                     }
@@ -526,12 +527,23 @@ todo:
                     }
                 }
 
-            --> 创建spring核心配置类 并指定扫描 自定义Bean
+                    如果需要加载Spring容器 可以将其改为
+                        // 加载spring容器配置
+                        @Override
+                        protected WebApplicationContext createRootApplicationContext() {
+                             AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+
+                            ctx.register(SpringConfig.class);
+
+                            return ctx;
+                        }
+
+            --> 创建springMVC核心配置类 并指定扫描 自定义Bean
 
                 @Configuration
                 @ComponentScan("com.hbmz.controller")
                 @EnableWebMvc   //使之能够处理WebMVC的数据 --> 如Json
-                public class SpringConfig {
+                public class SpringMVCConfig {
 
                 }
 
@@ -633,7 +645,7 @@ todo:
                 }
 
         @ResponseBody: 设置响应体: 返回值与方法的返回值一致
-            若不加该注解: 则表示响应体为与返回值同名的页面资源 --> 产生页面跳转
+                       若不加该注解: 则表示响应体为与返回值同名的页面资源 --> 产生页面跳转
     todo:
         REST风格: 表现性状态转移 ==> 一种资源的访问形式
             优点:
@@ -648,7 +660,7 @@ todo:
 
             描述模块名通常使用复数, 加s, 表示此类资源为多个
 
-            根据REST风格对资源进行访问称为 RESTful
+            根据REST风格对资源进行访问称为 RESTFul
 
             使用:
                  @Controller
@@ -682,6 +694,8 @@ todo:
                          return "{' module': 'springMVCRESTFul'}";
 
                      }
+
+                     其中: @PathVariable 路径变量(从请求路径中获取变量)
 
                      @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
                      @ResponseBody
@@ -762,6 +776,12 @@ todo:
 
                 }
 
+            @RequestParam 用于接收url地址传参or表单传参
+            @RequestBody 用于接收Json数据
+            @PathVariable 用于接收路径参数, 使用{参数名}
+
+            
+
     todo:
         将资源文件放行(交给服务器处理):
 
@@ -788,3 +808,9 @@ todo:
 
 
             }
+
+    todo:
+        SSM整合时,@PropertySource 要写成:
+            @PropertySource("classpath:db.properties")
+
+        否则报错
