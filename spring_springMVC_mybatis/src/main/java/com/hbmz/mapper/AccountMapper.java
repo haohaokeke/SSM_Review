@@ -7,19 +7,19 @@ import java.util.List;
 @Mapper
 public interface AccountMapper {
 
-    @Insert("insert into account values (null, #{usernaem}, #{balance})")
+    @Insert("insert into account values (null, #{username}, #{balance})")
     public void insert(Account account);
 
     @Delete("delete from account where id = #{id}")
     public void delete(@Param("id") Integer id);
 
-    @Update("update account set username = #{username}, balance = #{balance}")
+    @Update("update account set username = #{username}, balance = #{balance} where id = #{id}")
     public void update(Account account);
 
     @Select("select * from account where id = #{id}")
     public Account selectById(Integer id);
 
-    @Select("select * from account")
+
     public List<Account> selectAll();
 
 }
