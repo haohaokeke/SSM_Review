@@ -814,3 +814,52 @@ todo:
             @PropertySource("classpath:db.properties")
 
         否则报错
+
+    todo:
+        表现层数据封装
+            设置统一数据返回结果
+
+    todo:
+        springMVC异常处理器
+            集中统一的处理项目异常(一般所有异常都抛到表现层进行处理)
+                处理:
+                    在 controller包中 创建专门处理异常的类 ProjectExceptionAdvice
+
+                    @RestControllerAdvice
+                    public class ProjectExceptionAdvice {
+
+                        @ExceptionHandler(Exception.class)  // --> 拦截到的异常种类
+                        public Result doException() {
+
+                            return new Result(444, null, "有异常!!");
+
+                        }
+
+                    }
+
+        项目异常分类:
+            业务异常(BusinessException)
+                规范的用户行为产生的异常
+                不规范的用户行为产生的异常
+
+                解决方案:
+                    发送对相应消息传递给用户, 提醒规范操作
+
+            系统异常(SystemException)
+                项目运行的过程中可预计, 但不可避免的异常
+
+                解决方案:
+                    放松固定消息传递给用户, 安抚用户
+                    发送特定消息给运维人员, 提醒运维
+                    记录日志
+
+            其他异常(Exception)
+                编程人员未预期到的异常
+
+                解决方案:
+                    放松固定消息传递给用户, 安抚用户
+                    发送特定消息给编程人员, 提醒维护(并将结果纳入预期范围的异常中)
+                    记录日志
+
+
+
